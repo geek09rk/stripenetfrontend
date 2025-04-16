@@ -1,0 +1,10 @@
+{
+    "apps" : [
+      {
+        "name"     : "hupoxnetfrontend",
+        "script"    : "npx",
+        "interpreter": "none",
+        "args": "serve -s build -l 3860"
+      }
+    ]
+  }

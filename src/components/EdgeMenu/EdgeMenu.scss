@@ -1,0 +1,43 @@
+@import '../../scss/colors.scss';
+@import '../../scss/globals';
+
+.edge-menu-container {
+  box-shadow: 0 .1rem .230rem rgba(0, 0, 0, 0.15);
+  border-radius: $border-radius;
+  background: #fff;
+}
+
+.edge-name {
+  color: $text-main;
+}
+
+.edge-type {
+  color: $text-ghost;
+}
+
+.link {
+  font-size: 80%;
+  text-decoration: none!important;
+  transition: 0.3s;
+  font-weight: $fw-heavy;
+  color: $palette-1;
+  border-bottom: solid 2px transparent;
+
+  &:hover {
+    color: $palette-1-dark;
+    border-color: $palette-1-dark;
+  }
+}
+
+.edge-int {
+  color: $text-ghost;
+  font-weight: $fw-heavy;
+}
+
+.edge-int-type {
+  font-weight: $fw-medium;
+}
+
+.int-type {
+  font-size: 100%;
+}

@@ -1,0 +1,17 @@
+@import './colors';
+@import './globals';
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  color: $text-main;
+  background: #fdfdfd;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Roboto', sans-serif;
+}

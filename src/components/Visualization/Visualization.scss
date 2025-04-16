@@ -1,0 +1,72 @@
+@import '../../scss/colors.scss';
+@import '../../scss/globals';
+
+.cy-container {
+  background: #f8f7f7;
+  border-radius: $big-radius;
+  overflow: hidden;
+  box-shadow: 0 .155rem .180rem rgba(51, 50, 50, 0.582);
+  transition: 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 .195rem .220rem rgba(0, 0, 0, 0.25);
+  }
+}
+
+.cy-container div * {
+  left: 0;
+}
+
+.dl-icon {
+  color: $palette-1;
+  font-size: 200%;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover {
+    color: $palette-1-dark;
+  }
+}
+
+.legend-icon {
+  margin-right: 8px;
+  border-radius: 50%;
+}
+
+.legend-text {
+  font-size: 1em;
+  color: #333;
+  font-weight: 500;
+}
+
+.legend-row {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 767px) {
+  .legend-col {
+    padding: 10px;
+  }
+
+  .legend-text {
+    font-size: 1em;
+  }
+
+  .legend-icon {
+    margin-right: 8px;
+  }
+}
+
+.species{
+  margin-left: 60px;
+  align-items: left !important;
+  text-align: left;
+}

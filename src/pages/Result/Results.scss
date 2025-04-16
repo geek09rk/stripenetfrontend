@@ -1,0 +1,273 @@
+@import '../../scss/colors.scss';
+@import '../../scss/globals';
+
+.kbl-table {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+  
+  .kbl-thead {
+    background-color: #f8f9fa;
+    
+    th {
+      padding: 15px;
+      font-weight: 600;
+      color: #503c2c;
+      border-bottom: 2px solid #dee2e6;
+      white-space: nowrap;
+      
+      &:first-child {
+        border-top-left-radius: 8px;
+      }
+      
+      &:last-child {
+        border-top-right-radius: 8px;
+      }
+    }
+  }
+  
+  tbody {
+    tr {
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.001);
+      }
+      
+      td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #eee;
+        color: #444;
+        
+        a {
+          color: #2196f3;
+          text-decoration: none;
+          transition: color 0.2s ease;
+          
+          &:hover {
+            color: #0d47a1;
+            text-decoration: underline;
+          }
+          
+          &.host {
+            color: #4caf50;
+          }
+          
+          &.pathogen {
+            color: #f44336;
+          }
+          
+          &.interactor {
+            color: #9c27b0;
+          }
+        }
+        
+        .ant-btn {
+          margin: 0 4px;
+          
+          &:hover {
+            transform: translateY(-1px);
+          }
+        }
+      }
+      
+      &:nth-child(even) {
+        background-color: #fafafa;
+      }
+      
+      &.selected {
+        background-color: #e3f2fd;
+      }
+    }
+  }
+}
+
+.form-check-input {
+  cursor: pointer;
+  
+  &:checked {
+    background-color: #2196f3;
+    border-color: #2196f3;
+  }
+}
+
+.table-responsive {
+  max-height: 500px;
+  padding: 5px 2px;
+  border: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 25px 0;
+  
+  li {
+    margin: 5px;
+    
+    a {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #dee2e6;
+      color: #2196f3;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: #e3f2fd;
+        border-color: #2196f3;
+      }
+    }
+    
+    &.active a {
+      background-color: #2196f3;
+      border-color: #2196f3;
+      color: white;
+    }
+    
+    &.disabled a {
+      color: #6c757d;
+      pointer-events: none;
+      background-color: #fff;
+    }
+  }
+}
+
+.label-text {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.input-text {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+}
+
+.ant-divider-horizontal {
+  display: flex;
+  clear: both;
+  width: 100%;
+  min-width: 100%;
+  margin: 15px 0;
+}
+
+.heading{
+  padding: 0.7rem 0.5rem;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  background-color: $palette-2;
+  color:white;
+  font-weight: 500;
+  font-size: 16px;
+  font-family: "Roboto", "Helvetica Neue", Arial, Tahoma;
+}
+
+.heading2{
+  
+  padding-bottom: 0;
+  margin-top: 0;
+  font-weight: 500;
+  font-size: 16px;
+  font-family: "Roboto", "Helvetica Neue", Arial, Tahoma;
+  // color: rgb(28, 115, 197);
+}
+
+.pathogen{
+  color: rgb(192, 65, 65);
+  font-weight: 600;
+
+  &:hover{
+    color: lightcoral;
+    font-weight: 600;
+  }
+}
+
+.host{
+  color: rgb(38, 150, 72);
+  font-weight: 600;
+
+  &:hover{
+    color: rgb(36, 186, 236);
+    font-weight: 600;
+  }
+}
+
+.interactor{
+  color: rgb(192, 144, 14);
+  font-weight: 600;
+
+  &:hover{
+    color: rgb(36, 186, 236);
+    font-weight: 600;
+  }
+}
+
+.intmodal {
+ align-items: center;
+}
+
+.modal-backdrop{
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.results-container {
+  background-color: #f6f8fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin: 10px auto;
+  width: 95%;
+  max-width: 1200px;
+  // padding: 10px;
+}
+
+.results-header {
+  padding: 5px 10px;
+}
+
+.results-summary {
+  text-align: center;
+}
+
+.results-count {
+  font-size: 18px;
+  // color: #555;
+}
+
+.protein-stats {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.download-btn, .visualize-btn {
+  background: linear-gradient(45deg, #648fb8, #707070);
+  border: none;
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.search-parameters-section {
+  margin: 2rem 0;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

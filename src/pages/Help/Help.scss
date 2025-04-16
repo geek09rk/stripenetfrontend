@@ -1,0 +1,67 @@
+.help-page {
+  background-color: #f0f2f5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  max-width: 1250px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.title {
+    text-align: center;
+    margin-top: auto;
+}
+
+h2 {
+  text-align: center;
+  font-weight: bold;
+  color: #1890ff;
+  margin-bottom: 20px;
+}
+
+.card {
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #cc4343 !important;
+  text-align: left;
+}
+
+.card-content {
+  font-size: 1.2rem;
+  color: #3d3d3d;
+  text-align: left;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 700px;
+  width: 100%;
+  margin: 20px auto 0;
+}
+
+.footer img {
+  height: 50px;
+  width: auto;
+}
+
+.footer span {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.imk{
+    max-width: 800px;
+    align-items: center;
+}

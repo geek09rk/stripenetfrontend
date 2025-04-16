@@ -1,0 +1,32 @@
+@import '../../scss/colors.scss';
+@import '../../scss/globals';
+
+.node-menu-container {
+  box-shadow: 0 .1rem .230rem rgba(0, 0, 0, 0.15);
+  border-radius: $border-radius;
+  background: #fff;
+}
+
+.node-name {
+  color: $text-main;
+  
+}
+
+.node-type {
+  color: $text-ghost;
+  
+}
+
+.link {
+  font-size: 80%;
+  text-decoration: none!important;
+  transition: 0.3s;
+  // font-weight: $fw-heavy;
+  color: $palette-1;
+  border-bottom: solid 2px transparent;
+
+  &:hover {
+    color: $palette-1-dark;
+    border-color: $palette-1-dark;
+  }
+}
