@@ -8,6 +8,7 @@ export const downloadCsv = (data, tid) => {
         [
           "Host Protein",
           "Pathogen Protein",
+          "Species",
           "Interactor_A",
           "Interactor_B",
           "Interaction Source",
@@ -19,6 +20,7 @@ export const downloadCsv = (data, tid) => {
         ...data.map((item) => [
           item.Host_Protein,
           item.Pathogen_Protein,
+          item.Species,
           item.ProteinA,
           item.ProteinB,
           item.intdb_x,
@@ -38,6 +40,7 @@ export const downloadCsv = (data, tid) => {
         [
           "Host Protein",
           "Pathogen Protein",
+          "Species",
           "Interactor_A",
           "Interactor_B",
           "Interaction Source",
@@ -46,11 +49,11 @@ export const downloadCsv = (data, tid) => {
           "Interactor_B Name",
           "Interactor_B InterPro",
           "Interaction Confidence",
-          
         ],
         ...data.map((item) => [
           item.Host_Protein,
           item.Pathogen_Protein,
+          item.species,
           item.ProteinA,
           item.ProteinB,
           item.intdb,

@@ -145,7 +145,7 @@ export default class GO extends React.Component {
               <th>Protein Length</th>
               <th>Interpro ID</th>
               <th>Source Database</th>
-              <th>Domian ID</th>
+              <th>Domain ID</th>
               <th>Description</th>
               <th>InterPro Score</th>
             </tr>

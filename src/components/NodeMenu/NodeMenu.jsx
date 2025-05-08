@@ -4,6 +4,13 @@ import Col from 'react-bootstrap/Col';
 import './NodeMenu.scss';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
+const speciesNameMapping = {
+  taestivum: <span>Wheat Protein</span>, // Not strictly needed for legend but good practice
+  pstrs: <span><i>P. striiformis Protein</i></span>,
+  pstr78s: <span><i>P. striiformis</i> strain 78 Protein</span>,
+  pstr130s: <span><i>P. striiformis</i> strain 130 Protein</span>,
+};
+
 export class NodeMenu extends Component {
   constructor(props) {
     super(props);
@@ -15,15 +22,11 @@ export class NodeMenu extends Component {
     if (Object.keys(this.props.nodeData).length === 0) {
       return (<div>No node selected</div>);
     }
-
-    let type = 'Wheat Protein';
-    let ensemblPlants = `https://plants.ensembl.org/Multi/Search/Results?species=all;idx=;q=${this.props.nodeData.name};site=ensemblunit}`;
-    let ensemblFungi;
-    
-    if (this.props.nodeData.nodeType === 'Pathogen Protein') {
-      type = 'PST Protein';
-      ensemblFungi = `https://fungi.ensembl.org/Multi/Search/Results?species=all;idx=;q=${this.props.nodeData.name};site=ensemblunit}`;
-    }
+    console.log(speciesNameMapping);
+    console.log(this.props.nodeData);
+    const type = speciesNameMapping[this.props.nodeData.nodeType];
+    const ensemblPlants = `https://plants.ensembl.org/Multi/Search/Results?species=all;idx=;q=${this.props.nodeData.name};site=ensemblunit}`;
+    const ensemblFungi = `https://fungi.ensembl.org/Multi/Search/Results?species=all;idx=;q=${this.props.nodeData.name};site=ensemblunit}`;
 
     return (
       <div>
@@ -33,7 +36,7 @@ export class NodeMenu extends Component {
           <h5 className="no-name">Degree: {this.props.nodeData.degree}</h5>
           <Row>
             <Col>
-              {this.props.nodeData.nodeType === 'Pathogen Protein' ? (
+              {this.props.nodeData.nodeType !== 'taestivum' ? (
                 <a href={ensemblFungi} className="link" target="_blank" rel="noopener noreferrer" style={{ fontSize: '18px' }}>
                   Ensembl Fungi <FaExternalLinkAlt style={{ marginLeft: '5px', fontSize: '0.8em' }} />
                 </a>

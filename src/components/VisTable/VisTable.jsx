@@ -10,8 +10,6 @@ import './VisTable.scss';
 
 const tdata = JSON.parse(localStorage.getItem("resultid"));
 const params = JSON.parse(localStorage.getItem("param"));
-console.log(tdata)
-
 export const VisTable = ({tableRowClicked, handleSearchChange}) => {
   
   let [data, setData] = useState([]);
@@ -48,6 +46,7 @@ export const VisTable = ({tableRowClicked, handleSearchChange}) => {
           <tr>
             <th className="light">Wheat Protein</th>
             <th className="dark">PST Protein</th>
+            <th className="dark">PST Strain</th>
           </tr>
         </thead>
 
@@ -68,6 +67,7 @@ export const VisTable = ({tableRowClicked, handleSearchChange}) => {
 
               <td>{result.Host_Protein}</td>
               <td>{result.Pathogen_Protein}</td>
+              <td>{result.species}</td>
             </tr>
           ))}
         </tbody>
@@ -85,7 +85,6 @@ export const VisTable = ({tableRowClicked, handleSearchChange}) => {
 
               setSearchTerm(searchTerm);
               handleSearchChange(searchTerm);
-              console.log(searchTerm);
               if (event.target.value === '') {
                 const newData = data.data;
                 setTableData(newData);

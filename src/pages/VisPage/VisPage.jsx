@@ -8,11 +8,6 @@ import { NodeMenu } from '../../components/NodeMenu/NodeMenu';
 import { EdgeMenu } from '../../components/EdgeMenu/EdgeMenu';
 import { Divider } from "antd";
 
-const NodeTypeDict = {
-  'host': 'Host',
-  'pat': 'Pathogen Protein'
-}
-
 export default class VisPage extends Component {
 
   constructor(props) {
@@ -45,11 +40,11 @@ export default class VisPage extends Component {
     const data = e.target.data()
     
     console.log(data);
-    let nodeType = NodeTypeDict[data.className];
+    let nodeType = data.species;
     let itemName = data.id;
     let itemDegree = e.target.degree()
     let parsedData = {
-      nodeType,
+      nodeType: nodeType,
       name: itemName,
       degree: itemDegree
     }

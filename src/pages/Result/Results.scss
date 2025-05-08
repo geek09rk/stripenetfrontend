@@ -1,6 +1,10 @@
 @import '../../scss/colors.scss';
 @import '../../scss/globals';
 
+.ant-message {
+  z-index: 20000;
+}
+
 .kbl-table {
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

@@ -1,5 +1,5 @@
 import React from "react";
-import { Divider, Radio, Checkbox, Button, Card, Row, Col, Typography, Select, Input, Tooltip, Spin } from "antd";
+import { Divider, Radio, Checkbox, Button, Card, Row, Col, Typography, Select, Input, Tooltip, Spin, message } from "antd";
 import { InfoCircleOutlined, ArrowRightOutlined, DatabaseOutlined, FilterOutlined, DeploymentUnitOutlined, FileTextOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import "./Interactome.scss";
@@ -21,13 +21,19 @@ const interologOptions = [
   "ArabiHPI",
 ];
 
+const pathogenSpeciesOptions = [
+  { value: 'pstrs', label: <span style={{ fontSize: '16px' }}><i>P. striiformis</i></span> },
+  { value: 'pstr78s', label: <span style={{ fontSize: '16px' }}><i>P. striiformis</i> strain 78</span> },
+  { value: 'pstr130s', label: <span style={{ fontSize: '16px' }}><i>P. striiformis</i> strain 130</span> },
+];
+
 export default class Interactome extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       interactomeType: "interactome",
       searchType: "proteome",
-      idType:'host',
+      idType: 'host',
       ostype: "unique",
       checkedList: interologCheckedList,
       dcheckedList: domainCheckedList,
@@ -35,6 +41,7 @@ export default class Interactome extends React.Component {
       dcheckAll: false,
       status: "interolog",
       species: "pstrs",
+      species2: null,
       identity: 50,
       coverage: 50,
       evalue: 1e-05,
@@ -45,7 +52,7 @@ export default class Interactome extends React.Component {
       isOpen: false,
       ppiOpen: false,
       genes: '',
-      geneHintOn:false,
+      geneHintOn: false,
     };
     this.radioHandler = this.radioHandler.bind(this);
     this.speciesHandler = this.speciesHandler.bind(this);
@@ -62,11 +69,12 @@ export default class Interactome extends React.Component {
     this.interactomeHandler = this.interactomeHandler.bind(this);
     this.intHandler = this.intHandler.bind(this);
     this.fileSelected = this.fileSelected.bind(this);
-    this.handleGeneChange=this.handleGeneChange.bind(this);
+    this.handleGeneChange = this.handleGeneChange.bind(this);
     this.getInteractions = this.getInteractions.bind(this);
     this.setGeneHint = this.setGeneHint.bind(this);
     this.idHandler = this.idHandler.bind(this);
     this.accessionHandler = this.accessionHandler.bind(this);
+    this.species2Handler = this.species2Handler.bind(this);
   }
 
   radioHandler = (valueOrEvent) => {
@@ -80,6 +88,16 @@ export default class Interactome extends React.Component {
     const value = valueOrEvent?.target?.value ?? valueOrEvent;
     this.setState({ species: value });
     console.log(value);
+    // Reset species2 if it matches the new species value
+    if (value === this.state.species2) {
+      this.setState({ species2: null });
+    }
+  };
+
+  species2Handler = (valueOrEvent) => {
+    const value = valueOrEvent?.target?.value ?? valueOrEvent;
+    this.setState({ species2: value });
+    console.log('Second species selected:', value);
   };
 
   idHandler = (valueOrEvent) => {
@@ -142,7 +160,7 @@ export default class Interactome extends React.Component {
       checkAll: e.target.checked,
     });
   }
-  
+
   onCheckAllChange2(e) {
     this.setState({
       dcheckedList: e.target.checked ? domainOptions : [],
@@ -166,72 +184,153 @@ export default class Interactome extends React.Component {
 
   fileSelected(fileText) {
     const protein = fileText.trim().split("\n");
-    this.setState({genes: protein});
+    this.setState({ genes: protein });
   }
-  
+
   handleGeneChange(e) {
     this.setState({ genes: e.target.value });
   }
 
   setGeneHint(hint) {
-    this.setState({geneHintOn: hint});
+    this.setState({ geneHintOn: hint });
   }
-  
-  getInteractions() {
+
+  async getInteractions() {
     this.openModel();
 
     const intdb = this.state.checkedList.map((element) => {
       return element.toLowerCase();
     });
     const intdbd = intdb.toString()
-    console.log(intdbd)
 
     const domdb = this.state.dcheckedList.map((element) => {
       return element;
-      // .toLowerCase();
     });
-  
-    let hspecies = "interolog_taestivums"
-    let pspecies = "interolog_"+this.state.species
-    let postBody = {
-      category: this.state.status,
-      hspecies: hspecies,
-      pspecies: pspecies,
-      ids: this.state.idType,
-      genes:this.state.genes,
-      stype:this.state.searchType,
-      hi: this.state.identity,
-      hc: this.state.coverage,
-      he: this.state.evalue,
-      pi: this.state.pidentity,
-      pc: this.state.pcoverage,
-      pe: this.state.pevalue,
-      intdb: intdbd,
-      domdb: domdb,
+
+    const paramsToStore = {
+        category: this.state.status,
+        species: this.state.species,
+        species2: this.state.species2,
+        ids: this.state.idType,
+        genes: this.state.genes,
+        stype: this.state.searchType,
+        hi: this.state.identity,
+        hc: this.state.coverage,
+        he: this.state.evalue,
+        pi: this.state.pidentity,
+        pc: this.state.pcoverage,
+        pe: this.state.pevalue,
+        intdb: intdbd,
+        domdb: domdb,
     };
-    
-    console.log(postBody)
-    
-    if (this.state.status === 'domain'){
-      window.location.replace(`${env.BASE_URL}/results`);
-    }
-    else{
-      axios
-        .post(
-          `${env.BACKEND}/api/ppi/`,
-          postBody
-        )
-        .then((res) => {
-          const rid = res.data;
-          console.log(rid);
-          this.setState({ resultid: rid });
-          this.closeModel();
-          window.location.replace(`results`);
-        })
-        .catch((err) => {
-          console.log(err);
-          this.closeModel();
-        });
+    localStorage.setItem("param", JSON.stringify(paramsToStore));
+
+    if (this.state.status === 'consensus') {
+        console.log("Starting Consensus Workflow...");
+        try {
+            console.log("Calling /api/ppi for Interolog part...");
+            let host = "interolog_taestivums";
+            let pathogen = "interolog_" + this.state.species;
+            let pathogen2 = this.state.species2 ? "interolog_" + this.state.species2 : null;
+            
+            const ppiPostBody = {
+                category: 'interolog',
+                host: host,
+                pathogen: pathogen,
+                pathogen2: pathogen2,
+                hi: this.state.identity,
+                hc: this.state.coverage,
+                he: this.state.evalue,
+                pi: this.state.pidentity,
+                pc: this.state.pcoverage,
+                pe: this.state.pevalue,
+                intdb: intdbd,
+                genes: this.state.genes,
+                idType: this.state.idType,
+                domdb: [],
+            };
+
+            const ppiResponse = await axios.post(`${env.BACKEND}/api/ppi/`, ppiPostBody);
+            const interologCollectionName = ppiResponse.data;
+            console.log("Interolog results collection:", interologCollectionName);
+
+            if (!interologCollectionName || typeof interologCollectionName !== 'string') {
+                 throw new Error("Invalid collection name received from /api/ppi");
+            }
+
+            console.log("Calling /api/consensus...");
+            const consensusPostBody = {
+                interologCollectionName: interologCollectionName,
+                species: this.state.species,
+                species2: this.state.species2,
+                intdb: domdb,
+                genes: this.state.genes,
+                idt: this.state.idType
+            };
+
+            const consensusResponse = await axios.post(`${env.BACKEND}/api/consensus/`, consensusPostBody);
+            const consensusCollectionName = consensusResponse.data.results;
+            console.log("Consensus results collection:", consensusCollectionName);
+
+             if (!consensusCollectionName || typeof consensusCollectionName !== 'string') {
+                 throw new Error("Invalid collection name received from /api/consensus");
+            }
+
+            this.setState({ resultid: consensusCollectionName });
+            localStorage.setItem("resultid", JSON.stringify(consensusCollectionName));
+            this.closeModel();
+            window.location.replace(`${env.BASE_URL}/results`);
+
+        } catch (error) {
+            console.error("Consensus workflow failed:", error);
+             this.closeModel();
+             message.error(`Failed to get consensus results: ${error.message}`);
+        }
+    } else if (this.state.status === 'domain') {
+        console.log("Redirecting for Domain query...");
+        this.closeModel();
+        window.location.replace(`${env.BASE_URL}/results`);
+    } else {
+        console.log("Calling /api/ppi for Interolog only...");
+        let host = "interolog_taestivums";
+        let pathogen = "interolog_" + this.state.species;
+        let pathogen2 = this.state.species2 ? "interolog_" + this.state.species2 : null;
+
+        const postBody = {
+            category: this.state.status,
+            host: host,
+            pathogen: pathogen,
+            pathogen2: pathogen2,
+            hi: this.state.identity,
+            hc: this.state.coverage,
+            he: this.state.evalue,
+            pi: this.state.pidentity,
+            pc: this.state.pcoverage,
+            pe: this.state.pevalue,
+            intdb: intdbd,
+            domdb: [],
+            genes: this.state.genes,
+            idType: this.state.idType,
+        };
+
+        axios
+            .post(
+                `${env.BACKEND}/api/ppi/`,
+                postBody
+            )
+            .then((res) => {
+                const rid = res.data;
+                console.log("Interolog results collection (direct):", rid);
+                this.setState({ resultid: rid });
+                localStorage.setItem("resultid", JSON.stringify(rid));
+                this.closeModel();
+                window.location.replace(`${env.BASE_URL}/results`);
+            })
+            .catch(error => {
+                console.error("Interolog API call failed:", error);
+                 this.closeModel();
+                 message.error(`Failed to get Interolog results: ${error.message}`);
+            });
     }
   }
 
@@ -248,12 +347,13 @@ export default class Interactome extends React.Component {
         resultid: this.state.resultid,
         category: this.state.status,
         species: this.state.species,
+        species2: this.state.species2,
         domdb: this.state.dcheckedList,
         ids: this.state.idType,
         genes: this.state.genes,
       })
     );
-    
+
     let genePlaceholder = 'Example (Ensembl IDs): TraesCS6A02G321200.1, TraesCS5A02G133000.1, TraesCS5D02G141200.1, TraesCS5A02G177100.1';
     let geneSample = 'TraesCS6A02G321200.1, TraesCS5A02G133000.1, TraesCS5D02G141200.1, TraesCS5A02G177100.1';
 
@@ -261,18 +361,22 @@ export default class Interactome extends React.Component {
       genePlaceholder = 'Example (Ensembl IDs): POW03357, KNE94478, KNF05665, JGI_V11_PST130_P498769';
       geneSample = 'POW03357, POW18015, POV93884';
     }
-    
-    // const { Title, Paragraph, Text } = Typography;
+
     const { Title, Text } = Typography;
     const { TextArea } = Input;
-    
+
+    const filteredspecies2Options = [
+      { value: null, label: <span style={{ fontSize: '16px', fontStyle: 'italic' }}>None</span> },
+      ...pathogenSpeciesOptions.filter(option => option.value !== this.state.species)
+    ];
+
     return (
       <div className="interactome-container">
         {localStorage.setItem("resultid", JSON.stringify(this.state.resultid))}
-        
+
         <Card className="header-card">
           <Title level={2} className="page-title">
-            <DeploymentUnitOutlined className="title-icon" /> 
+            <DeploymentUnitOutlined className="title-icon" />
             Host-Pathogen Protein-Protein Interactions Inference
           </Title>
         </Card>
@@ -286,10 +390,10 @@ export default class Interactome extends React.Component {
             <p className="info">
               The International Molecular Exchange Consortium
               (<a target="_blank" rel="noreferrer" href="https://www.imexconsortium.org">IMEX</a>)
-              is an international collaboration between a group of major public 
+              is an international collaboration between a group of major public
               interaction data providers. We selected five PPI databases (HPIDB, MINT, DIP,
               BioGRID and IntAct), as these are most comprehensive for protein
-              interaction studies. The interaction data from these databases was extensively 
+              interaction studies. The interaction data from these databases was extensively
               filtered for "plant-pathogen" interactions to obtain high-confidence interactions.
             </p>
 
@@ -335,28 +439,33 @@ export default class Interactome extends React.Component {
             <Title level={4} className="section-title">
               <DatabaseOutlined className="section-icon" /> Basic Configuration
             </Title>
-            
+
             <Row gutter={[24, 24]} className="config-row">
               <Col xs={24} md={8}>
                 <Card className="option-card" title="Pathogen Strain" headStyle={{ fontSize: '18px' }}>
-                  <Select 
+                  <Select
                     className="full-width"
-                    value={this.state.species} 
+                    value={this.state.species}
                     onChange={this.speciesHandler}
                     style={{ minWidth: 200 }}
-                    options={[
-                      { value: 'pstrs', label: <span style={{ fontSize: '16px' }}><i>P. striiformis</i></span> },
-                      { value: 'pstr78s', label: <span style={{ fontSize: '16px' }}><i>P. striiformis</i> strain 78</span> },
-                      { value: 'pstr130s', label: <span style={{ fontSize: '16px' }}><i>P. striiformis</i> strain 130</span> },
-                    ]}
+                    options={pathogenSpeciesOptions}
+                  />
+                  <br></br>
+                  <br></br>
+                  <Select
+                    className="full-width"
+                    value={this.state.species2}
+                    onChange={this.species2Handler}
+                    style={{ minWidth: 200 }}
+                    options={filteredspecies2Options}
                   />
                 </Card>
               </Col>
-              
+
               <Col xs={20} md={8}>
                 <Card className="option-card" title="Computational Model" headStyle={{ fontSize: '18px' }}>
-                  <Radio.Group 
-                    name="radiogroup" 
+                  <Radio.Group
+                    name="radiogroup"
                     defaultValue={"interolog"}
                     className="radio-group"
                     onChange={this.radioHandler}
@@ -367,11 +476,11 @@ export default class Interactome extends React.Component {
                   </Radio.Group>
                 </Card>
               </Col>
-              
+
               <Col xs={24} md={8}>
                 <Card className="option-card" title="Search Type" headStyle={{ fontSize: '18px' }}>
-                  <Radio.Group 
-                    name="radiogroup" 
+                  <Radio.Group
+                    name="radiogroup"
                     defaultValue={"proteome"}
                     className="radio-group"
                     onChange={this.idHandler}
@@ -389,12 +498,12 @@ export default class Interactome extends React.Component {
               <Title level={4} className="section-title">
                 <FileTextOutlined className="section-icon" /> Protein Accession(s)
               </Title>
-              
+
               <Row gutter={[24, 24]} className="config-row">
                 <Col xs={24} md={6}>
                   <Card className="option-card" title="ID Type" headStyle={{ fontSize: '18px' }}>
-                    <Radio.Group 
-                      name="radiogroup" 
+                    <Radio.Group
+                      name="radiogroup"
                       defaultValue={"host"}
                       className="radio-group"
                       onChange={this.accessionHandler}
@@ -404,36 +513,36 @@ export default class Interactome extends React.Component {
                     </Radio.Group>
                   </Card>
                 </Col>
-                
+
                 <Col xs={24} md={18}>
                   <Card className="option-card" title="Enter Protein ID(s)" headStyle={{ fontSize: '18px' }}>
-                    <TextArea 
-                      className="protein-textarea" 
-                      rows={4} 
-                      placeholder={genePlaceholder} 
+                    <TextArea
+                      className="protein-textarea"
+                      rows={4}
+                      placeholder={genePlaceholder}
                       onChange={this.handleGeneChange}
-                      value={this.state.genes} 
-                      onMouseEnter={() => this.setGeneHint(true)} 
-                      onMouseLeave={() => this.setGeneHint(false)} 
+                      value={this.state.genes}
+                      onMouseEnter={() => this.setGeneHint(true)}
+                      onMouseLeave={() => this.setGeneHint(false)}
                       spellCheck={false}
                     />
-                    
+
                     <div className="button-group">
-                      <Button 
-                        type="default" 
-                        onClick={e => { this.setState({genes: geneSample}) }}
+                      <Button
+                        type="default"
+                        onClick={e => { this.setState({ genes: geneSample }) }}
                       >
                         Sample Data
                       </Button>
-                      <Button 
-                        danger 
-                        onClick={e => { this.setState({genes: ""}) }}
+                      <Button
+                        danger
+                        onClick={e => { this.setState({ genes: "" }) }}
                       >
                         Clear Data
                       </Button>
-                      
+
                       <Divider type="vertical" />
-                      
+
                       <Tooltip title="Upload a file with protein IDs">
                         <span className="upload-container">
                           <FileInput handler={this.fileSelected} />
@@ -451,7 +560,7 @@ export default class Interactome extends React.Component {
               <Title level={4} className="section-title">
                 <DatabaseOutlined className="section-icon" /> Interolog Databases
               </Title>
-              
+
               <Card className="option-card">
                 <div className="card-header">
                   <span className="card-title">Select Interolog Database(s)</span>
@@ -479,11 +588,11 @@ export default class Interactome extends React.Component {
                   </Checkbox>
                 </div>
               </Card>
-              
+
               <Title level={4} className="section-title mt-4">
                 <FilterOutlined className="section-icon" /> Filtering Options
               </Title>
-              
+
               <Row gutter={[24, 24]} className="config-row">
                 <Col xs={24} md={12}>
                   <Card className="option-card" title="Host Alignments" headStyle={{ fontSize: '18px' }}>
@@ -497,7 +606,7 @@ export default class Interactome extends React.Component {
                           />
                         </div>
                       </Col>
-                      
+
                       <Col span={8}>
                         <div className="form-item">
                           <label>% Coverage</label>
@@ -507,7 +616,7 @@ export default class Interactome extends React.Component {
                           />
                         </div>
                       </Col>
-                      
+
                       <Col span={8}>
                         <div className="form-item">
                           <label><i>e</i>-value</label>
@@ -520,7 +629,7 @@ export default class Interactome extends React.Component {
                     </Row>
                   </Card>
                 </Col>
-                
+
                 <Col xs={24} md={12}>
                   <Card className="option-card" title="Pathogen Alignments" headStyle={{ fontSize: '18px' }}>
                     <Row gutter={[16, 16]}>
@@ -533,7 +642,7 @@ export default class Interactome extends React.Component {
                           />
                         </div>
                       </Col>
-                      
+
                       <Col span={8}>
                         <div className="form-item">
                           <label>% Coverage</label>
@@ -543,7 +652,7 @@ export default class Interactome extends React.Component {
                           />
                         </div>
                       </Col>
-                      
+
                       <Col span={8}>
                         <div className="form-item">
                           <label><i>e</i>-value</label>
@@ -565,12 +674,12 @@ export default class Interactome extends React.Component {
               <Title level={4} className="section-title">
                 <DatabaseOutlined className="section-icon" /> Domain Databases
               </Title>
-              
+
               <Card className="option-card">
                 <div className="card-header">
                   <span className="card-title">Select Domain Database(s)</span>
                 </div>
-                
+
                 <div className="checkbox-container">
                   <CheckboxGroup
                     options={domainOptions}
@@ -579,7 +688,7 @@ export default class Interactome extends React.Component {
                     className="checkbox-group"
                   />
                 </div>
-                
+
                 <div className="check-all-container">
                   <Checkbox
                     onChange={this.onCheckAllChange2}
@@ -599,7 +708,7 @@ export default class Interactome extends React.Component {
               <Title level={4} className="section-title">
                 <DatabaseOutlined className="section-icon" /> Database Selection
               </Title>
-              
+
               <Row gutter={[24, 24]} className="config-row">
                 <Col xs={24} md={12}>
                   <Card className="option-card" title="Interolog Databases" headStyle={{ fontSize: '18px' }}>
@@ -611,7 +720,7 @@ export default class Interactome extends React.Component {
                         className="checkbox-group"
                       />
                     </div>
-                    
+
                     <div className="check-all-container">
                       <Checkbox
                         onChange={this.onCheckAllChange}
@@ -623,7 +732,7 @@ export default class Interactome extends React.Component {
                     </div>
                   </Card>
                 </Col>
-                
+
                 <Col xs={24} md={12}>
                   <Card className="option-card" title="Domain Databases" headStyle={{ fontSize: '18px' }}>
                     <div className="checkbox-container">
@@ -647,11 +756,11 @@ export default class Interactome extends React.Component {
                   </Card>
                 </Col>
               </Row>
-              
+
               <Title level={4} className="section-title mt-4">
                 <FilterOutlined className="section-icon" /> Filtering Options
               </Title>
-              
+
               <Row gutter={[24, 24]} className="config-row">
                 <Col xs={24} md={12}>
                   <Card className="option-card" title="Host Alignment" headStyle={{ fontSize: '18px' }}>
@@ -665,7 +774,7 @@ export default class Interactome extends React.Component {
                           />
                         </div>
                       </Col>
-                      
+
                       <Col span={8}>
                         <div className="form-item">
                           <label>% Coverage</label>
@@ -675,7 +784,7 @@ export default class Interactome extends React.Component {
                           />
                         </div>
                       </Col>
-                      
+
                       <Col span={8}>
                         <div className="form-item">
                           <label><i>e</i>-value</label>
@@ -688,7 +797,7 @@ export default class Interactome extends React.Component {
                     </Row>
                   </Card>
                 </Col>
-                
+
                 <Col xs={24} md={12}>
                   <Card className="option-card" title="Pathogen Alignment" headStyle={{ fontSize: '18px' }}>
                     <Row gutter={[16, 16]}>
@@ -701,7 +810,7 @@ export default class Interactome extends React.Component {
                           />
                         </div>
                       </Col>
-                      
+
                       <Col span={8}>
                         <div className="form-item">
                           <label>% Coverage</label>
@@ -711,7 +820,7 @@ export default class Interactome extends React.Component {
                           />
                         </div>
                       </Col>
-                      
+
                       <Col span={8}>
                         <div className="form-item">
                           <label><i>e</i>-value</label>
@@ -752,14 +861,14 @@ export default class Interactome extends React.Component {
           <div className="d-flex align-items-center justify-content-between" style={{ maxWidth: '700px', width: '100%' }}>
             <span style={{ fontSize: '18px', fontWeight: '500' }}>&copy; 2025</span>
             <a href="https://kaabil.net" target="_blank" rel="noopener noreferrer">
-              <img 
+              <img
                 src={`${process.env.PUBLIC_URL}/images/kaabil.png`}
-                alt="Kaundal Artificial Intelligence and Advanced Bioinformatics Lab" 
+                alt="Kaundal Artificial Intelligence and Advanced Bioinformatics Lab"
                 style={{ height: '50px', width: 'auto' }}
               />
             </a>
             <a href="https://usu.edu" target="_blank" rel="noopener noreferrer">
-              <img 
+              <img
                 src={`${process.env.PUBLIC_URL}/images/usu_blue.png`}
                 alt="Utah State University"
                 style={{ height: '40px', width: 'auto' }}
