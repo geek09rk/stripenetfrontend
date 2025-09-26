@@ -4,7 +4,7 @@
         "name"     : "hupoxnetfrontend",
         "script"    : "npx",
         "interpreter": "none",
-        "args": "serve -s build -l 3860"
+        "args": "serve -s build -l 3710"
       }
     ]
   }

@@ -23,13 +23,14 @@
     "react-loading": "^2.0.3",
     "react-paginate": "^8.2.0",
     "react-router-dom": "^6.15.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "sass": "^1.66.1",
+    "serve": "^14.2.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-dotenv && react-scripts start",
-    "local": "serve -s build -l 3860",
+    "local": "serve -s build -l 3710",
     "build": "react-dotenv && react-scripts build",
     "update": "git pull origin master && npm i && react-scripts build && react-dotenv && pm2 restart hupoxnetfrontend",
     "test": "react-scripts test",
@@ -52,5 +53,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
 }
